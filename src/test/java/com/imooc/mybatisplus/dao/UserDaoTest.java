@@ -121,7 +121,7 @@ public class UserDaoTest extends MybatisPlusApplicationTests {
                 .select(User::getName)
                 .like(User::getName, "雨")
                 .le(User::getAge, 40));
-        Assert.assertTrue(!CollectionUtils.isEmpty(users));
+        Assert.assertFalse(CollectionUtils.isEmpty(users));
 
         // 使用Predicate函数排除不需要查询的列
         Predicate<TableFieldInfo> exceptColumnPredicate = tableFieldInfo -> !tableFieldInfo.getColumn().equals(User.CREATE_TIME) && !tableFieldInfo.getColumn().equals(User.MANAGER_ID);
@@ -129,7 +129,7 @@ public class UserDaoTest extends MybatisPlusApplicationTests {
                 .select(User.class, exceptColumnPredicate)
                 .like(User::getName, "雨")
                 .le(User::getAge, 40));
-        Assert.assertTrue(!CollectionUtils.isEmpty(userList));
+        Assert.assertFalse(CollectionUtils.isEmpty(userList));
     }
 
     @Test
@@ -148,7 +148,7 @@ public class UserDaoTest extends MybatisPlusApplicationTests {
         // 当且仅当condition=true时，查询条件才生效
         List<User> users = this.userDao.selectList(Wrappers.<User>lambdaQuery()
                 .like(condition, User::getName, name));
-        Assert.assertTrue(!CollectionUtils.isEmpty(users));
+        Assert.assertFalse(CollectionUtils.isEmpty(users));
     }
 
     @Test
@@ -158,7 +158,7 @@ public class UserDaoTest extends MybatisPlusApplicationTests {
         paramMap.put(User.AGE, null);
         List<User> users = this.userDao.selectList(Wrappers.<User>query()
                 .allEq(true, (key, value) -> key.equals("name"), paramMap, true));
-        Assert.assertTrue(!CollectionUtils.isEmpty(users));
+        Assert.assertFalse(CollectionUtils.isEmpty(users));
     }
 
     @Test
@@ -168,7 +168,7 @@ public class UserDaoTest extends MybatisPlusApplicationTests {
                 .select("avg(age) avg_age,min(age) min_avg,max(age) max_age")
                 .groupBy(User.MANAGER_ID)
                 .having("sum(age) < {0}", 500));
-        Assert.assertTrue(!CollectionUtils.isEmpty(result));
+        Assert.assertFalse(CollectionUtils.isEmpty(result));
     }
 
     @Test
@@ -176,7 +176,7 @@ public class UserDaoTest extends MybatisPlusApplicationTests {
         // selectObjs 只返回第一列数据
         List<Object> result = this.userDao.selectObjs(Wrappers.<User>lambdaQuery()
                 .like(User::getName, "雨"));
-        Assert.assertTrue(!CollectionUtils.isEmpty(result));
+        Assert.assertFalse(CollectionUtils.isEmpty(result));
     }
 
     @Test
@@ -185,16 +185,16 @@ public class UserDaoTest extends MybatisPlusApplicationTests {
                 .like(User::getName, "雨")
                 .ge(User::getAge, 20)
                 .list();
-        Assert.assertTrue(!CollectionUtils.isEmpty(users));
+        Assert.assertFalse(CollectionUtils.isEmpty(users));
     }
 
     @Test
     public void testCustomerSelectSql() {
         List<User> users = this.userDao.selectAll(Wrappers.<User>lambdaQuery().like(User::getName, "雨"));
-        Assert.assertTrue(!CollectionUtils.isEmpty(users));
+        Assert.assertFalse(CollectionUtils.isEmpty(users));
 
         List<User> userList = this.userDao.selectByCondition("雨", -1);
-        Assert.assertTrue(!CollectionUtils.isEmpty(userList));
+        Assert.assertFalse(CollectionUtils.isEmpty(userList));
     }
 
     @Test
@@ -252,6 +252,7 @@ public class UserDaoTest extends MybatisPlusApplicationTests {
                 .setEmail("401664157@qq.com")
                 .setManagerId(1088248166370832385L)
                 .setName("李清照");
-        this.userDao.insert(user);
+        int effectRowCount = this.userDao.insert(user);
+        Assert.assertEquals(1, effectRowCount);
     }
 }

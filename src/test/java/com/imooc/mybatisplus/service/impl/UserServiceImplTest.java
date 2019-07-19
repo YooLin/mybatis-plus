@@ -21,7 +21,7 @@ public class UserServiceImplTest extends MybatisPlusApplicationTests {
     @Test
     public void testSelect() {
         List<User> users = this.userService.lambdaQuery().select(User::getName).like(User::getName, "雨").list();
-        Assert.assertTrue(!CollectionUtils.isEmpty(users));
+        Assert.assertFalse(CollectionUtils.isEmpty(users));
     }
 
     @Test
